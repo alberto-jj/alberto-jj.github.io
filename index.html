@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <!-- Optional but useful for SEO / search snippets -->
+    <meta name="description" content="Electrophysiology of Neurodegenerative Diseases. Resting-state EEG biomarkers, spectral and complexity analyses, harmonization and multi-modal integration.">
+
+    <title>Alberto Jaramillo-Jimenez M.D. Ph.D</title>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="./favicon_package_v0.16/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon_package_v0.16/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon_package_v0.16/favicon-16x16.png">
+    <link rel="manifest" href="./favicon_package_v0.16/site.webmanifest">
+
+    <link rel="preload" as="image" href="./eeg_portrait_small.png">
+
+    <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        background: black;
+      }
+
+      #app {
+        background-color: black;
+        background-image: url("./cursor.gif");
+        background-repeat: no-repeat;
+        background-size: 50;
+        background-attachment: fixed;
+        background-position-x: -92px;
+      }
+
+      .v-application,
+      .v-application .body-1,
+      .v-application .body-2,
+      .v-application .caption,
+      .v-application .display-1,
+      .v-application .display-2,
+      .v-application .display-3,
+      .v-application .display-4,
+      .v-application .headline,
+      .v-application .overline,
+      .v-application .subtitle-1,
+      .v-application .subtitle-2,
+      .v-application .title {
+        font-family: 'Source Code Pro', monospace !important;
+      }
+
+      .v-application p,
+      .v-application .body-1,
+      .v-application .body-2 {
+        font-size: 1.12rem;
+        line-height: 1.65;
+      }
+
+      .multiline { white-space: pre-line; }
+
+      :-webkit-any(article, aside, nav, section) h1 {
+        font-size: 2em;
+        margin-block-start: 0.67em;
+        margin-block-end: 0.67em;
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+
+      .hero-header {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero-container.container {
+        max-width: 100% !important;
+        width: 100% !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+      }
+
+      .hero-content {
+        padding-right: calc(clamp(110px, 18vw, 180px) + 28px);
+        margin: 0 !important;
+        padding-left: 0 !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+      }
+
+      .profile-photo {
+        position: absolute;
+        top: 18px;
+        right: 0;
+        width: clamp(130px, 20vw, 220px);
+        height: auto;
+        border-radius: 10px;
+        z-index: 10;
+        pointer-events: none;
+
+        /* 🔥 soft fade edges */
+        -webkit-mask-image: radial-gradient(circle at center,
+            rgba(0,0,0,1) 40%,
+            rgba(0,0,0,0) 100%);
+        mask-image: radial-gradient(circle at center,
+            rgba(0,0,0,1) 40%,
+            rgba(0,0,0,0) 100%);
+      }
+
+      @media (max-height: 720px) { .profile-photo { transform: scale(0.92); } }
+      @media (max-height: 640px) { .profile-photo { transform: scale(0.85); } }
+      @media (max-height: 560px) { .profile-photo { transform: scale(0.78); } }
+
+      .signals-full {
+        margin-right: calc(-1 * (clamp(110px, 18vw, 180px) + 28px));
+      }
+
+      .signals-band {
+        width: 100%;
+        height: 27vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        background: black;
+      }
+
+      .signals-img {
+        width: 100%;
+        height: auto;
+        max-height: 100%;
+        display: block;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* Publications cards become clickable without nesting <a> tags */
+      .work-card { cursor: pointer; }
+
+      @media (max-width: 600px) {
+        .hero-content {
+          padding-right: calc(clamp(92px, 30vw, 130px) + 18px);
+        }
+
+        .profile-photo {
+          top: 10px;
+          right: 0;
+          width: clamp(92px, 30vw, 130px);
+          border-radius: 10px;
+        }
+
+        .signals-full {
+          margin-right: calc(-1 * (clamp(92px, 30vw, 130px) + 18px));
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="app">
+      <v-app>
+        <header class="container hero-container hero-header" v-bind="sectionHeight" style="margin: 0; padding: 0;">
+          <img
+            src="./eeg_portrait_small.png"
+            alt="Portrait photo"
+            class="profile-photo"
+            loading="eager"
+            decoding="async"
+          />
+
+          <v-row align="center" justify="center" style="margin: 0; padding: 0;">
+            <v-col cols="12" class="hero-content">
+              <h1 class="display-2 primary--text" style="margin-left: 20px;">{{name}}</h1>
+              <h2 class="primary--text" style="margin-left: 20px;">{{jobTitle}}</h2>
+              <p style="margin-left: 20px;">{{jobDescription}}</p>
+
+              <div class="signals-full">
+                <div class="signals-band">
+                  <img
+                    src="./signals.gif"
+                    alt="EEG Trace GIF"
+                    class="signals-img"
+                  />
+                </div>
+              </div>
+
+              <nav style="margin-left: 20px;">
+                <v-btn href="#about_me" text="text" class="primary--text">/about_me</v-btn>
+                <v-btn href="#works" text="text" class="primary--text">/publications</v-btn>
+                <v-btn href="#contact" text="text" class="primary--text">/contact</v-btn>
+              </nav>
+            </v-col>
+          </v-row>
+        </header>
+
+        <main class="container">
+          <section class="row mb-5" id="about_me">
+            <v-col cols="12" md="6">
+              <h1 class="primary--text" data-aos="fade-up">/ABOUT_ME</h1>
+            </v-col>
+
+            <v-col v-for="(skill, index) in about_me" cols="12" :key="index">
+              <v-card hover height="100%" data-aos="fade-up">
+                <v-card-text>
+                  <h2 class="primary--text">> {{skill.name}}</h2>
+                  <br>
+                  <p v-html="skill.description" style="white-space: pre-line;"></p>
+                </v-card-text>
+
+                <v-card-actions class="px-4 pb-3">
+                  <v-spacer></v-spacer>
+                  <a
+                    href="./index.html"
+                    class="primary--text"
+                    style="text-decoration:none;"
+                    title="Back to homesite"
+                  >
+                    <small class="primary--text">cd ..</small>
+                  </a>
+                </v-card-actions>
+              </v-card>
+            </v-col>
+          </section>
+
+          <section class="row mb-5" id="works">
+            <v-col cols="12" md="6">
+              <h1 class="primary--text" data-aos="fade-up">/PUBLICATIONS</h1>
+            </v-col>
+
+            <v-col v-for="(work, index) in works" cols="12" :key="index">
+              <!-- ✅ Clickable card via JS so we can keep cd.. INSIDE the box -->
+              <v-card
+                hover
+                height="100%"
+                data-aos="fade-up"
+                class="work-card"
+                role="link"
+                tabindex="0"
+                @click="openPaper(work.link)"
+                @keyup.enter="openPaper(work.link)"
+              >
+                <v-card-text>
+                  <h2 class="primary--text">> {{work.name}}</h2>
+                  <br>
+                  <p class="multiline">{{work.description}}</p>
+                </v-card-text>
+
+                <v-card-actions class="px-4 pb-3">
+                  <!-- cd .. (go to homesite) -->
+                  <a
+                    href="./index.html"
+                    class="primary--text"
+                    style="text-decoration:none;"
+                    title="Back to homesite"
+                    @click.stop
+                  >
+                    <small class="primary--text">cd ..</small>
+                  </a>
+
+                  <v-spacer></v-spacer>
+
+                  <!-- ./paper (open paper) -->
+                  <a
+                    href="#"
+                    class="primary--text"
+                    style="text-decoration:none;"
+                    title="Open paper"
+                    @click.prevent.stop="openPaper(work.link)"
+                  >
+                    <small class="primary--text">./paper</small>
+                  </a>
+                </v-card-actions>
+              </v-card>
+            </v-col>
+          </section>
+
+          <section class="row justify-center" id="contact">
+            <v-col cols="12" md="10" class="text-center">
+              <h1 class="primary--text" data-aos="fade-up">/CONTACT</h1>
+            </v-col>
+
+            <v-col cols="12" sm="6" md="4" class="text-center">
+              <v-row>
+                <v-col class="text-center" cols="12" data-aos="fade-up">
+                  <h3 v-if="contacts && contacts.email">{{contacts.email}}</h3>
+                  <h3 v-if="contacts && contacts.mobileNo">{{contacts.mobileNo}}</h3>
+                  <h3 v-if="contacts && contacts.phoneNo">{{contacts.phoneNo}}</h3>
+                </v-col>
+
+                <!-- ✅ IMPORTANT: no data-aos here (prevents AOS from hiding the buttons) -->
+                <v-col class="text-center" cols="12">
+                  <v-btn
+                    class="ma-1"
+                    v-for="(link, index) in contactLinks"
+                    :key="index"
+                    outlined="outlined"
+                    rounded="rounded"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    :href="link.link"
+                    color="primary"
+                  >
+                    {{link.name}}
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-col>
+          </section>
+        </main>
+      </v-app>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="config.js"></script>
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+
+    <script>
+      var vm = new Vue({
+        el: '#app',
+        vuetify: new Vuetify({
+          theme: {
+            dark: true,
+            themes: {
+              dark: {
+                primary: '#19c113',
+                secondary: '#424242',
+                accent: '#82B1FF',
+                error: '#FF5252',
+                info: '#2196F3',
+                success: '#4CAF50',
+                warning: '#FFC107'
+              }
+            }
+          }
+        }),
+        data() {
+          return {
+            menu: false,
+            ...window.PorfolioConfig,
+            works: []
+          };
+        },
+        methods: {
+          openPaper(url) {
+            if (!url) return;
+            window.open(url, '_blank', 'noopener,noreferrer');
+          }
+        },
+        async created() {
+          const candidates = [
+            './publications.json',
+            'publications.json',
+            new URL('publications.json', window.location.href).toString()
+          ];
+
+          let data = null;
+          for (const url of candidates) {
+            try {
+              const response = await fetch(url, { cache: 'no-store' });
+              if (!response.ok) continue;
+
+              const parsed = await response.json();
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                data = parsed;
+                break;
+              }
+            } catch (error) {}
+          }
+
+          if (data) {
+            this.works = data;
+            return;
+          }
+
+          const fallback = (window.PorfolioConfig && Array.isArray(window.PorfolioConfig.works))
+            ? window.PorfolioConfig.works
+            : [];
+
+          this.works = fallback.length
+            ? fallback
+            : [{
+                name: 'Publications unavailable',
+                link: '#',
+                description: 'Could not load publications.json'
+              }];
+        },
+        mounted() {
+          // ✅ crucial when using Vue + AOS: refresh after Vue renders
+          this.$nextTick(() => {
+            if (window.AOS && typeof window.AOS.refreshHard === 'function') {
+              window.AOS.refreshHard();
+            }
+          });
+        },
+        updated() {
+          // ✅ keep AOS in sync after reactive updates
+          if (window.AOS && typeof window.AOS.refresh === 'function') {
+            window.AOS.refresh();
+          }
+        },
+        computed: {
+          $isMobile() {
+            return this.$vuetify.breakpoint.smAndDown;
+          },
+          sectionHeight() {
+            return { style: 'min-height: 100vh', class: 'fill-height' };
+          },
+          contactLinks() {
+            if (this.contacts && this.contacts.links && this.contacts.links.length) {
+              return this.contacts.links;
+            }
+            return [];
+          }
+        }
+      });
+
+      AOS.init({ once: true, delay: 0 });
+    </script>
+  </body>
+
+</html>
